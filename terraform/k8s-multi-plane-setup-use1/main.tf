@@ -20,7 +20,7 @@ module "asg" {
   ]
   instance_profile = aws_iam_instance_profile.ec2_instance_profile.name
   key_name         = aws_key_pair.ssh_key.id
-  userdata_base64  = local.app_userdata_base64
+  userdata_base64  = each.value.userdata_file 
   node_name_tag    = each.value.node_name_tag
 }
 

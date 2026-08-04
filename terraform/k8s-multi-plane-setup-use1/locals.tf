@@ -2,7 +2,6 @@ locals {
   azs                 = ["us-east-1a", "us-east-1b"]
   region              = "us-east-1"
   vpc_cidr            = "10.0.0.0/16"
-  app_userdata_base64 = base64encode(file("${path.module}/scripts/app-userdata.sh"))
 
   images = {
     amz_lnx = "ami-024ee5112d03921e2" #amz linux
@@ -24,12 +23,14 @@ locals {
       node_ec2_type    = "t3.small" #2G,2vcpu
       min_instances = 1
       max_instances = 1
+      userdata_file = base64encode(file("${path.module}/scripts/controlplane-userdata.sh"))
     }
     data_plane = {
       node_name_tag = "node_data_plane"
       node_ec2_type    = "t3.small" #2G,2vcpu
       min_instances = 1
       max_instances = 2
+      userdata_file = base64encode(file("${path.module}/scripts/controlplane-userdata.sh"))
      }
   }
 
