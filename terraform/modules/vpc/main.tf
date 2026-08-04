@@ -255,6 +255,13 @@ resource "aws_security_group" "private_sg" {
     #security_groups = [ aws_security_group.alb-sg.id ]
     cidr_blocks = [ aws_vpc.my_vpc.cidr_block ]
   }
+  ingress {
+    from_port   = 6443
+    to_port     = 6443
+    protocol    = "tcp"
+    #security_groups = [ aws_security_group.alb-sg.id ]
+    cidr_blocks = [ aws_vpc.my_vpc.cidr_block ]
+  }
   egress {
     from_port   = 0
     to_port     = 0
