@@ -17,10 +17,12 @@ aws secretsmanager get-secret-value --secret-id node_rsa_key --query SecretStrin
 sudo chown ec2-user /home/ec2-user/.ssh/id_rsa
 chmod 400 /home/ec2-user/.ssh/id_rsa
 
+sudo mkdir /var/log/ansible
+sudo chown ec2-user.ec2-user /var/log/ansible
 pip3 install boto3 botocore >> $LOG_FILE 2>&1 
-ansible-galaxy collection install community.general -p /home/ec2-user/.local/share/ansible/collections >> $LOG_FILE 2>&1
-ansible-galaxy collection install ansible.posix -p /home/ec2-user/.local/share/ansible/collections >> $LOG_FILE 2>&1
-ansible-galaxy collection install amazon.aws -p /home/ec2-user/.local/share/ansible/collections >> $LOG_FILE 2>&1
+ansible-galaxy collection install community.general -p /home/ec2-user/.ansible/collections >> $LOG_FILE 2>&1
+ansible-galaxy collection install ansible.posix -p /home/ec2-user/.ansible/collections >> $LOG_FILE 2>&1
+ansible-galaxy collection install amazon.aws -p /home/ec2-user/.ansible/collections >> $LOG_FILE 2>&1
 
 git clone https://github.com/riyaztevar/library-app.git >> $LOG_FILE 2>&1
 cd library-app/ansible
