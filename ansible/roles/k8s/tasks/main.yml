@@ -8,6 +8,7 @@
 - name: Setup control plane
   include_tasks: setup_control_plane.yml
   when: inventory_hostname in groups['k8s_control_plane']
+  tags: setup_control_plane
 
 - name: copy config
   include_tasks: copy_config.yml

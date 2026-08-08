@@ -1,6 +1,6 @@
 - name: Run shell scp command directly
   ansible.builtin.command:
-    cmd: "scp -o StrictHostKeyChecking=no ec2-user@{{ node_hostname }}:/home/ec2-user/.kube/config /home/ec2-user/.kube/config"
+    cmd: "scp -o StrictHostKeyChecking=no ec2-user@{{ inventory_hostname }}:/home/ec2-user/.kube/config /home/ec2-user/.kube/config"
   # Use creates to ensure the command is idempotent
   delegate_to: localhost
   become_user: ec2-user
@@ -11,7 +11,7 @@
   #     server: https://10.0.0.105:6443 
     path: /home/ec2-user/.kube/config
     regexp: '(\s*)server:\shttps://.*:6443'
-    line: '\1server: https://{{node_hostname}}:6443'
+    line: '\1server: https://{{inventory_hostname}}:6443'
     backrefs: yes
     state: present
   delegate_to: localhost
