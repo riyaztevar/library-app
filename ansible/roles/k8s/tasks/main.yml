@@ -13,3 +13,5 @@
 - name: copy config
   include_tasks: copy_config.yml
   tags: copy_config
+  when: inventory_hostname in groups['k8s_control_plane']
+
