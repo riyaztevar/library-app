@@ -11,3 +11,11 @@ keyed_groups:
 
 hostnames:
    - 'private-ip-address'
+
+compose:
+  node_priv_ip: private_ip_address
+
+groups:
+  k8s_cluster: "'control_plane' in tags.Name or 'data_plane' in tags.Name"
+
+

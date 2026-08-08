@@ -1,6 +1,6 @@
 ---
 - name: Setup k8s cluster
-  hosts: all 
+  hosts: k8s_cluster
   become: true
   gather_facts: false
   serial: 2
