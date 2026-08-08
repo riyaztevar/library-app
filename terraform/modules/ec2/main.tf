@@ -25,7 +25,7 @@ resource "aws_instance" "spot_ec2" {
       Name = var.instance_name,
   })
   user_data_base64 = var.userdata_base64
-
+  iam_instance_profile = var.instance_profile
 }
 
 

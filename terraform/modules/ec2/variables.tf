@@ -20,6 +20,11 @@ variable "instance_role" {
   type = string
 }
 
+variable "instance_profile" {
+  type = string
+  default = ""
+}
+
 variable "spot_type" {
   type    = string
   default = "one-time"

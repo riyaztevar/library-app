@@ -1,0 +1,19 @@
+- name: Run shell scp command directly
+  ansible.builtin.command:
+    cmd: "scp -i ~/.ssh/tictac_ssh_priv.pem -o StrictHostKeyChecking=no ec2-user@{{ node_hostname }}:/home/ec2-user/.kube/config /Users/riyaztevar/.kube/config"
+  # Use creates to ensure the command is idempotent
+  delegate_to: localhost
+  become_user: riyaztevar
+  tags: copy_config
+
+- name: replace private ip with hostname
+  ansible.builtin.lineinfile:
+  #     server: https://10.0.0.105:6443 
+    path: /Users/riyaztevar/.kube/config
+    regexp: '(\s*)server:\shttps://.*:6443'
+    line: '\1server: https://{{node_hostname}}:6443'
+    backrefs: yes
+    state: present
+  delegate_to: localhost
+  become_user: riyaztevar
+  tags: copy_config

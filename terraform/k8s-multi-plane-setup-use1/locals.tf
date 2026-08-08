@@ -19,14 +19,14 @@ locals {
   bastion_userdata_base64 = base64encode(file("${path.module}/scripts/bastion-userdata.sh"))
   nodes = {
     control_plane = {
-      node_name_tag = "node_control_plane"
+      node_name_tag = "control_plane"
       node_ec2_type    = "t3.small" #2G,2vcpu
       min_instances = 1
       max_instances = 1
       userdata_file = base64encode(file("${path.module}/scripts/controlplane-userdata.sh"))
     }
     data_plane = {
-      node_name_tag = "node_data_plane"
+      node_name_tag = "data_plane"
       node_ec2_type    = "t3.small" #2G,2vcpu
       min_instances = 1
       max_instances = 2

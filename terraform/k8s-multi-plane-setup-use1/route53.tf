@@ -6,7 +6,11 @@ data "aws_route53_zone" "sandbox" {
 data "aws_instance" "control_plane_node" {
   filter {
     name   = "tag:Name"
-    values = ["node_control_plane"]
+    values = ["control_plane"]
+  }
+ filter {
+  name   = "instance-state-name"
+  values = ["running"]
   }
   depends_on = [ module.asg ]
 }
@@ -14,7 +18,11 @@ data "aws_instance" "control_plane_node" {
 data "aws_instance" "data_plane_node" {
   filter {
     name   = "tag:Name"
-    values = ["node_data_plane"]
+    values = ["data_plane"]
+  }
+  filter { 
+  name   = "instance-state-name"
+  values = ["running"]
   }
   depends_on = [ module.asg ]
 }

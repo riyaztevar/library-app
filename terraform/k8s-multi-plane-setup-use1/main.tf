@@ -18,7 +18,7 @@ module "asg" {
   security_group_ids = [
     module.vpc_infra.private_sg_id
   ]
-  instance_profile = aws_iam_instance_profile.ec2_instance_profile.name
+  instance_profile = aws_iam_instance_profile.nodes_instance_profile.name
   key_name         = aws_key_pair.ssh_key.id
   userdata_base64  = each.value.userdata_file 
   node_name_tag    = each.value.node_name_tag
@@ -38,6 +38,7 @@ module "bastion" {
   userdata_base64 = try(local.bastion_userdata_base64, "")
   ssh_key         = aws_key_pair.ssh_key.id
   valid_until_hrs = local.valid_until_hrs
+  instance_profile = aws_iam_instance_profile.bastion_instance_profile.name
   depends_on = [aws_key_pair.ssh_key
   ]
   instance_role = "troubleshoot"

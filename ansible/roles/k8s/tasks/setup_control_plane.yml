@@ -1,0 +1,128 @@
+
+- name: fix CRI errors
+  ansible.builtin.command:
+    cmd: containerd config default
+  register: containerd_config
+
+- name: Create containerd config file
+  ansible.builtin.copy:
+    content: "{{ containerd_config.stdout }}"
+    dest: /etc/containerd/config.toml
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: enable systemd cgroup for containerd
+  ansible.builtin.lineinfile:
+    path: /etc/containerd/config.toml
+    search_string: 'SystemdCgroup = false'
+    line: 'SystemdCgroup = true'
+    state: present
+
+- name: restart containerd
+  ansible.builtin.systemd:
+    name: containerd
+    state: restarted
+
+- name: restart kubelet
+  ansible.builtin.systemd:
+    name: kubelet
+    state: restarted
+
+- name: Check if kubeadm is already initialized
+  ansible.builtin.stat:
+    path: /etc/kubernetes/admin.conf
+  register: kubeadm_init_result
+
+# - name: Gather facts about targeted EC2 instances
+  # amazon.aws.ec2_instance_info:
+  #   region: us-east-1
+  #   filters:
+  #     "tag:Name": "{{ec2_tag}}"
+  # register: ec2_info
+  # when: not kubeadm_init_result.stat.exists
+
+- name: Copy and interpolate configuration file
+  ansible.builtin.template:
+    src: templates/kubeadm_conf.j2
+    dest: /tmp/kubeadm-config.yml
+    mode: '0644'
+  when: not kubeadm_init_result.stat.exists
+
+- name: Run kubeadm init to setup control plane
+  ansible.builtin.command:
+    #cmd: kubeadm init --apiserver-cert-extra-sans="kubenode-use1.mysandbox.net.in" --pod-network-cidr={{ pod_network_cidr }} --ignore-preflight-errors=NumCPU,Mem
+    cmd: kubeadm init --config=/tmp/kubeadm-config.yml --ignore-preflight-errors=NumCPU,Mem
+  when: not kubeadm_init_result.stat.exists
+
+- name: Wait for control plane API to be ready
+  uri:
+    url: "https://{{ ansible_host }}:6443/readyz"
+    validate_certs: no
+    return_content: yes
+  delegate_to: localhost
+  become: no
+  register: api_status
+  until: api_status.status == 200 and 'ok' in api_status.content
+  retries: 10 
+  delay: 10
+
+- name: Generate cluster join command
+  command: kubeadm token create --print-join-command
+  register: join_command_raw
+  changed_when: true 
+  notify: join dataplane node
+
+- name: Create .kube directory
+  ansible.builtin.file:
+    path: /home/ec2-user/.kube
+    state: directory
+    owner: ec2-user
+    group: ec2-user
+    mode: '0700'
+
+- name: Copy kubeconfig to user
+  ansible.builtin.copy:
+    src: /etc/kubernetes/admin.conf
+    dest: /home/ec2-user/.kube/config
+    owner: ec2-user
+    group: ec2-user
+    mode: '0600'
+    remote_src: yes
+  notify: restart kubelet
+
+- name: Force kubelet restart
+  ansible.builtin.meta: flush_handlers
+
+- name: Sleep for 5 seconds
+  ansible.builtin.pause:
+    seconds: 5
+
+- name: Install Calico CNI
+  ansible.builtin.shell:
+    cmd: /usr/bin/kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.27.0/manifests/calico.yaml --kubeconfig=/home/ec2-user/.kube/config
+
+
+# - name: Apply a Kubernetes manifest from a file
+#   kubernetes.core.k8s:
+#     state: present
+#     src: https://raw.githubusercontent.com/projectcalico/calico/v3.27.0/manifests/calico.yaml
+#     kubeconfig: ~/.kube/config
+
+# - name: Install helm
+#   ansible.builtin.shell:
+#     cmd: curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-4 | bash
+
+# - name: add nginx repo
+#   ansible.builtin.command:
+#     cmd: helm repo add nginx-stable https://helm.nginx.com/stable
+
+# - name: update helm repo
+#   ansible.builtin.command:
+#     cmd: helm repo update
+
+# - name: install nginx ingress
+#   ansible.builtin.command:
+#     cmd: helm install my-ingress nginx-stable/nginx-ingress
+
+

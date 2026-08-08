@@ -1,0 +1,12 @@
+---
+- name: Setup k8s cluster
+  hosts: all 
+  become: true
+  gather_facts: false
+  serial: 2
+  user: ec2-user
+  vars:
+    skip_setup: true
+
+  roles:
+    - k8s

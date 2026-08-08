@@ -1,0 +1,12 @@
+k8s_packages:
+  - kubelet
+  - kubeadm
+  - kubectl
+  - containerd
+
+pod_network_cidr: "10.244.0.0/16"
+node_hostname: "kubenode-use1.mysandbox.net.in"
+
+
+
+  

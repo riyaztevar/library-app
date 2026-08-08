@@ -1,0 +1,14 @@
+- name: Initial Setup
+  include_tasks: initial_setup.yml
+  when: skip_setup != true
+
+- name: Install packages
+  include_tasks: setup_common.yml
+
+- name: Setup control plane
+  include_tasks: setup_control_plane.yml
+  when: inventory_hostname in groups['k8s_control_plane']
+
+- name: copy config
+  include_tasks: copy_config.yml
+  tags: copy_config
