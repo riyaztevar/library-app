@@ -6,7 +6,7 @@ filters:
 
 keyed_groups:
   - key: tags.Name
-    prefix: k8s 
+    prefix: k8s
     separator: "_"
 
 hostnames:

@@ -13,20 +13,20 @@ Host *
 EOF
 
 sudo dnf install -y awscli ansible-core python-pip >> $LOG_FILE
-aws secretsmanager get-secret-value --secret-id node_rsa_key --query SecretString --output text > /home/ec2-user/.ssh/id_rsa 2 >> $LOG_FILE
+aws secretsmanager get-secret-value --secret-id node_rsa_key --query SecretString --output text > /home/ec2-user/.ssh/id_rsa 2> $LOG_FILE
 chmod 400 /home/ec2-user/.ssh/id_rsa
 
-pip3 install boto3 botocore
-ansible-galaxy collection install community.general
-ansible-galaxy collection install ansible.posix
-ansible-galaxy collection install amazon.aws
+pip3 install boto3 botocore >> $LOG_FILE 2>&1 
+ansible-galaxy collection install community.general >> $LOG_FILE 2>&1 
+ansible-galaxy collection install ansible.posix >> $LOG_FILE 2>&1
+ansible-galaxy collection install amazon.aws >> $LOG_FILE 2>&1
 
 git clone https://github.com/riyaztevar/library-app.git >> $LOG_FILE 2>&1 
 cd library-app/ansible
-ansible-playbook -v playbooks/k8s.yaml -e skip_setup=false > /tmp/ansible.log
+ansible-playbook -v playbooks/k8s.yaml -e skip_setup=false
 
 #install kubectl client
-curl -LO "https://dl.k8s.io/release/v1.31.0/bin/linux/amd64/kubectl"
+curl -LO "https://dl.k8s.io/release/v1.31.0/bin/linux/amd64/kubectl" || echo "failed to download kubectl binary" >> $LOG_FILE
 chmod +x kubectl
 sudo mv kubectl /usr/local/bin/ && echo "installed kubectl cli" >> $LOG_FILE
 
