@@ -14,6 +14,7 @@ EOF
 
 sudo dnf install -y awscli ansible-core python-pip >> $LOG_FILE
 aws secretsmanager get-secret-value --secret-id node_rsa_key --query SecretString --output text > /home/ec2-user/.ssh/id_rsa 2> $LOG_FILE
+sudo chown ec2-user /home/ec2-user/.ssh/id_rsa
 chmod 400 /home/ec2-user/.ssh/id_rsa
 
 pip3 install boto3 botocore >> $LOG_FILE 2>&1 
