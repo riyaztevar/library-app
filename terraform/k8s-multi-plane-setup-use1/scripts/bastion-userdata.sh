@@ -18,11 +18,11 @@ sudo chown ec2-user /home/ec2-user/.ssh/id_rsa
 chmod 400 /home/ec2-user/.ssh/id_rsa
 
 pip3 install boto3 botocore >> $LOG_FILE 2>&1 
-ansible-galaxy collection install community.general >> $LOG_FILE 2>&1 
-ansible-galaxy collection install ansible.posix >> $LOG_FILE 2>&1
-ansible-galaxy collection install amazon.aws >> $LOG_FILE 2>&1
+ansible-galaxy collection install community.general -p /home/ec2-user/.local/share/ansible/collections >> $LOG_FILE 2>&1
+ansible-galaxy collection install ansible.posix -p /home/ec2-user/.local/share/ansible/collections >> $LOG_FILE 2>&1
+ansible-galaxy collection install amazon.aws -p /home/ec2-user/.local/share/ansible/collections >> $LOG_FILE 2>&1
 
-git clone https://github.com/riyaztevar/library-app.git >> $LOG_FILE 2>&1 
+git clone https://github.com/riyaztevar/library-app.git >> $LOG_FILE 2>&1
 cd library-app/ansible
 ansible-playbook -v playbooks/k8s.yml -e skip_setup=false
 
