@@ -7,3 +7,11 @@
   ansible.builtin.systemd:
     name: kubelet
     state: restarted
+
+- name: join dataplane node
+  command: "{{ join_command_raw.stdout }}"
+  args:
+    # Makes the task idempotent so it doesn't fail if the node has already joined
+    creates: /etc/kubernetes/kubelet.conf
+  delegate_to: "{{ item }}"
+  loop: "{{ groups['k8s_data_plane'] }}"
