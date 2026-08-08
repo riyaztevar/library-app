@@ -57,14 +57,16 @@
 
 - name: Wait for control plane API to be ready
   uri:
-    url: "https://{{ ansible_host }}:6443/readyz"
+    url: "https://127.0.0.1:6443/readyz"
     validate_certs: no
     return_content: yes
-  delegate_to: localhost
-  become: no
+  become: false
   register: api_status
-  until: api_status.status == 200 and 'ok' in api_status.content
-  retries: 10 
+  failed_when: false
+  until: 
+    - api_status.status == 200 
+    - "'ok' in api_status.content"
+  retries: 30
   delay: 10
 
 - name: Generate cluster join command
