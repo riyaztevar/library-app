@@ -24,7 +24,7 @@ chown ec2-user.ec2-user /var/log/ansible
 sudo -u ec2-user pip3 install boto3 botocore ansible >> $LOG_FILE 2>&1
 export PATH=$PATH:/home/ec2-user/.local/bin >> ~/.bashrc
 export PATH=$PATH:/home/ec2-user/.local/bin
-sudo -u ec2-user ansible-galaxy collection install community.general ansible.posix amazon.aws >> $LOG_FILE 2>&1
+sudo -u ec2-user /home/ec2-user/.local/bin/ansible-galaxy collection install community.general ansible.posix amazon.aws >> $LOG_FILE 2>&1
 
 #install kubectl client
 curl -LO "https://dl.k8s.io/release/v1.31.0/bin/linux/amd64/kubectl" || echo "failed to download kubectl binary" >> $LOG_FILE
