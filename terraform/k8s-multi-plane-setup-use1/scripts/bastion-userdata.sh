@@ -6,6 +6,7 @@ mkswap /swapfile
 swapon /swapfile
 
 LOG_FILE="/tmp/setup.log"
+MAX_RETRIES=60
 
 cat << EOF >> /home/ec2-user/.ssh/config
 Host *
@@ -25,7 +26,7 @@ sudo -u ec2-user ansible-galaxy collection install community.general ansible.pos
 
 git clone https://github.com/riyaztevar/library-app.git >> $LOG_FILE 2>&1
 cd library-app/ansible
-ansible-playbook -v playbooks/k8s.yml -e skip_setup=false > /var/log/ansible/ansible.log
+ansible-playbook -v playbooks/k8s.yml -e skip_setup=false
 
 #install kubectl client
 curl -LO "https://dl.k8s.io/release/v1.31.0/bin/linux/amd64/kubectl" || echo "failed to download kubectl binary" >> $LOG_FILE
@@ -36,4 +37,23 @@ mv kubectl /usr/local/bin/ && echo "installed kubectl cli" >> $LOG_FILE
 
 mkdir /home/ec2-user/.kube
 chown ec2-user.ec2-user /home/ec2-user/.kube
-scp ec2-user@${CTLPLANE_IP}:/home/ec2-user/.kube/config /home/ec2-user/.kube/config >> $LOG_FILE 2>&1
+
+CTLPLANE_IP=$(aws ec2 describe-instances --filters "Name=tag:Name,Values=control_plane" --query 'Reservations[*].Instances[*].PrivateIpAddress' --output text)
+
+if [[ -z "$CTLPLANE_IP" ]]; then
+  echo "Control plane is not found. exiting" >> $LOG_FILE
+  exit
+fi
+
+count = 0
+until [ "$count" == $MAX_RETRIES ]; do
+  status = `curl -k -s -o /dev/null -w "%{http_code}" https://${CTLPLANE_IP}:${API_PORT}/readyz || true`
+  if $status -eq 200; then
+    echo "Control plane is READY! (HTTP 200 received)" >> $LOG_FILE
+    scp ec2-user@${CTLPLANE_IP}:/home/ec2-user/.kube/config /home/ec2-user/.kube/config >> $LOG_FILE 2>&1
+    break
+  fi
+  echo "control plane isn't ready. Trying again" >> $LOG_FILE
+  count=$((count + 1))
+  sleep 5
+done
