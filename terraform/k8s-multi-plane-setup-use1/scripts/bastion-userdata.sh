@@ -25,7 +25,7 @@ ansible-galaxy collection install community.general ansible.posix amazon.aws >> 
 
 git clone https://github.com/riyaztevar/library-app.git >> $LOG_FILE 2>&1
 cd library-app/ansible
-ansible-playbook -v playbooks/k8s.yml -e skip_setup=false
+ansible-playbook -v playbooks/k8s.yml -e skip_setup=false > /var/log/ansible/ansible.log
 
 #install kubectl client
 curl -LO "https://dl.k8s.io/release/v1.31.0/bin/linux/amd64/kubectl" || echo "failed to download kubectl binary" >> $LOG_FILE
