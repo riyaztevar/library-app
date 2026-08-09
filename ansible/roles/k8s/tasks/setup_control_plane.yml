@@ -1,34 +1,4 @@
 
-- name: fix CRI errors
-  ansible.builtin.command:
-    cmd: containerd config default
-  register: containerd_config
-
-- name: Create containerd config file
-  ansible.builtin.copy:
-    content: "{{ containerd_config.stdout }}"
-    dest: /etc/containerd/config.toml
-    owner: root
-    group: root
-    mode: '0644'
-
-- name: enable systemd cgroup for containerd
-  ansible.builtin.lineinfile:
-    path: /etc/containerd/config.toml
-    search_string: 'SystemdCgroup = false'
-    line: 'SystemdCgroup = true'
-    state: present
-
-- name: restart containerd
-  ansible.builtin.systemd:
-    name: containerd
-    state: restarted
-
-- name: restart kubelet
-  ansible.builtin.systemd:
-    name: kubelet
-    state: restarted
-
 - name: Check if kubeadm is already initialized
   ansible.builtin.stat:
     path: /etc/kubernetes/admin.conf

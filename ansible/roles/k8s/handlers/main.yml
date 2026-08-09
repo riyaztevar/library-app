@@ -9,6 +9,7 @@
     state: restarted
 
 - name: join dataplane node
+  become: true
   command: "{{ join_command_raw.stdout }}"
   args:
     # Makes the task idempotent so it doesn't fail if the node has already joined
