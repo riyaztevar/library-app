@@ -265,8 +265,8 @@ resource "aws_security_group" "private_sg" {
   }
   # allow 
     ingress {
-    from_port   = 0
-    to_port     = 0
+    from_port   = 10250
+    to_port     = 10250
     protocol    = "tcp"
     cidr_blocks = aws_subnet.private[*].cidr_block
     }
