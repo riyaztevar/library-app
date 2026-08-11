@@ -11,7 +11,8 @@ resource "aws_subnet" "public" {
     availability_zone = var.azs[count.index]
     cidr_block = cidrsubnet(var.vpc_cidr, var.newbits, count.index)
     tags = merge(var.tags, {
-        Name = "pub${count.index}"
+        Name = "pub${count.index}",
+        "kubernetes.io/role/elb" = 1
     })
 }
 
@@ -262,6 +263,13 @@ resource "aws_security_group" "private_sg" {
     #security_groups = [ aws_security_group.alb-sg.id ]
     cidr_blocks = [ aws_vpc.my_vpc.cidr_block ]
   }
+  # allow 
+    ingress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "tcp"
+    cidr_blocks = aws_subnet.private[*].cidr_block
+    }
   egress {
     from_port   = 0
     to_port     = 0
