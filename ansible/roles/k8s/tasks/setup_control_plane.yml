@@ -66,13 +66,13 @@
 - name: Force kubelet restart
   ansible.builtin.meta: flush_handlers
 
-- name: Sleep for 5 seconds
-  ansible.builtin.pause:
-    seconds: 5
+# - name: Sleep for 5 seconds
+#   ansible.builtin.pause:
+#     seconds: 5
 
-- name: Install Calico CNI
-  ansible.builtin.shell:
-    cmd: /usr/bin/kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.27.0/manifests/calico.yaml --kubeconfig=/home/ec2-user/.kube/config
+# - name: Install Calico CNI
+#   ansible.builtin.shell:
+#     cmd: /usr/bin/kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.27.0/manifests/calico.yaml --kubeconfig=/home/ec2-user/.kube/config
 
 
 # - name: Apply a Kubernetes manifest from a file
