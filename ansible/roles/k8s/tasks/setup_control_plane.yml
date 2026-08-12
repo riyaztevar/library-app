@@ -12,15 +12,9 @@
   # register: ec2_info
   # when: not kubeadm_init_result.stat.exists
 - name: get subnet cidr
-  command: aws ec2 describe-subnets --subnet-ids $(aws ec2 describe-instances \
-        --filters "Name=tag:Name,Values=control_plane" \
-        --query "Reservations[*].Instances[*].SubnetId" \
-        --output text) \
-    --query "Subnets[*].CidrBlock" \
-    --output text
+  ansible.builtin.script: files/get_subnet_cidr.sh
   register: subnet_cidr
   delegate_to: localhost
-
 
 - name: Copy and interpolate configuration file
   ansible.builtin.template:

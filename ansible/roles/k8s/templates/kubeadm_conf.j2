@@ -2,7 +2,7 @@ apiVersion: kubeadm.k8s.io/v1beta4
 kind: ClusterConfiguration
 clusterName: library-k8s-cluster
 networking:
-  serviceSubnet: "{{ subnet_cidr }}"
+  serviceSubnet: "{{ subnet_cidr.stdout }}"
 apiServer:
   certSANs:
     - "{{ node_hostname }}"
