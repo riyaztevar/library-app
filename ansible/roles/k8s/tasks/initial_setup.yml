@@ -44,11 +44,11 @@
     policy: targeted
     state: permissive
 
-- name: install net-tools
-  ansible.builtin.yum:
-    name: net-tools
-    state: present
-    update_cache: yes
+# - name: install net-tools
+#   ansible.builtin.yum:
+#     name: net-tools
+#     state: present
+#     update_cache: yes
 
 - name: update path
   ansible.builtin.lineinfile:

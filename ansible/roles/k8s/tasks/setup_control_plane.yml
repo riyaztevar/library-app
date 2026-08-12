@@ -13,12 +13,13 @@
   # when: not kubeadm_init_result.stat.exists
 - name: get subnet cidr
   command: aws ec2 describe-subnets --subnet-ids $(aws ec2 describe-instances \
-        --filters "Name=tag:Name,Values=node_control_plane" \
+        --filters "Name=tag:Name,Values=control_plane" \
         --query "Reservations[*].Instances[*].SubnetId" \
         --output text) \
     --query "Subnets[*].CidrBlock" \
     --output text
   register: subnet_cidr
+  delegate_to: localhost
 
 
 - name: Copy and interpolate configuration file

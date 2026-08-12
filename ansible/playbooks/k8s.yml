@@ -6,7 +6,7 @@
   serial: 2
   user: ec2-user
   vars:
-    skip_setup: true
+    skip_setup: false
 
   roles:
     - k8s

@@ -53,6 +53,14 @@ data "aws_iam_policy_document" "secrets_reader" {
     ]
     resources = ["*"]
   }
+    statement {
+    sid = "AllowDescribeSubnet"
+    effect = "Allow"
+    actions = [
+      "ec2:DescribeSubnets"
+    ]
+    resources = ["*"]
+  }
 }
 
 # Secret read policy for bastion
