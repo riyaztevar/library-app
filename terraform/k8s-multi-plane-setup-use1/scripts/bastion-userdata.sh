@@ -52,7 +52,7 @@ until [[ "$count" == $MAX_RETRIES ]]; do
   status=$(curl -k -s -o /dev/null -w "%{http_code}" https://${CTLPLANE_IP}:${API_PORT}/readyz || true)
   if [[ $status -eq 200 ]]; then
     echo "Control plane is READY! (HTTP 200 received)" >> $LOG_FILE
-    sudo -u ec2-user scp ec2-user@10.0.2.119:/home/ec2-user/.kube/config /home/ec2-user/.kube/config >> $LOG_FILE 2>&1
+    sudo -u ec2-user scp ec2-user@${CTLPLANE_IP}:/home/ec2-user/.kube/config /home/ec2-user/.kube/config >> $LOG_FILE 2>&1
     break
   fi
   echo "control plane isn't ready. Trying again" >> $LOG_FILE
