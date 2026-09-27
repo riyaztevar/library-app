@@ -30,7 +30,7 @@ locals {
       node_ec2_type    = "t3.small" #2G,2vcpu
       min_instances = 1
       max_instances = 2
-      userdata_file = base64encode(file("${path.module}/scripts/controlplane-userdata.sh"))
+      userdata_file = base64encode(file("${path.module}/scripts/dataplane-userdata.sh"))
      }
   }
 
